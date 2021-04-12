@@ -148,7 +148,7 @@
             gauss(){
                 let i, pivot;
                 let pivotlst = [];
-                let solveable = true;
+                let consistent = true;
                 console.log(this.print());
                 gaussPrint(this.print());
                 for(i = 0, this.pivHeight = 0; i<this.length; i++, this.pivHeight++){ //per ogni colonna della matrice
@@ -189,10 +189,10 @@
                     gaussPrint("\\(\\text{Free variables = " + pivotlst.map((e, i)=>!e?(i+1)+"°":"").filter(e=>e!="").join(' ')+"}\\)");
                 for(let j = this.pivHeight; j<this.m.length; j++){
                     gaussPrint(`\\(\\ ${this.m[j].printP2()} \\text{ must be = 0 ${isNaN(this.m[j].printP2()) || this.m[j].printP2() == 0 ? "" : ", but it isn't!!"}}\\)`);
-                    if(!isNaN(this.m[j].printP2()) && this.m[j].printP2() != 0) solveable = false;
+                    if(!isNaN(this.m[j].printP2()) && this.m[j].printP2() != 0) consistent = false;
                 }
                 this.pivHeight--;
-                if(pivotlst.every(e => e) && solveable) this.jordan();
+                if(pivotlst.every(e => e) && consistent) this.jordan();
                 MathJax.typeset();
             }
             jordan(){
