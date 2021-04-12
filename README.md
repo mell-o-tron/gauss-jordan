@@ -1,2 +1,5 @@
-# Risolutore algebrico Gauss-Jordan
-Risolutore di sistemi algebrici con il metodo Gauss-Jordan e spiegazione passo passo in js
+# Gauss-Jordan Elimination
+## Linear System Solver by federico2407
+Solves linear systems using Gauss-Jordan elimination, with step-by-step explanation.
+
+Translated by mell-o-tron
