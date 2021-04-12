@@ -4,23 +4,25 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <body>
         <div>
-            Numero di dimensioni: <input type="number" size=2 id="dimensionValue"> <button onclick="setDimension()" id="dimensionButton">Avanti</button>
+            Dimensions: <input type="number" size=2 id="dimensionValue"> <button onclick="setDimension()" id="dimensionButton">Ok</button>
         </div>
         <div  id="controls" style="visibility: hidden">
-            <button onclick="addVector()">Aggiungi vettore</button>
+            <button onclick="addVector()">Add vector</button>
             <input type="radio" id="generic" name="result" onclick="resultType('generic')">
             <label for="generic">Generic</label>
             <input type="radio" id="specific" name="result" onclick="resultType('specific')">
             <label for="specific">Specific</label>
-            <button onclick="startCalc()">Calcola</button>
+            <button onclick="startCalc()">Compute</button>
         </div>
         <div>
             <span id="newVector"></span>
             <span id="result" style="visibility: hidden"></span>
         </div>
         <div id="resultContainer"></div>
-
     </body>
+    
+    <br>
+    Translated by MellOTron
     <script>
         Math.MCD = function(a, b){
             let sign = a / Math.abs(a);
@@ -146,6 +148,7 @@
             gauss(){
                 let i, pivot;
                 let pivotlst = [];
+                let solveable = true;
                 console.log(this.print());
                 gaussPrint(this.print());
                 for(i = 0, this.pivHeight = 0; i<this.length; i++, this.pivHeight++){ //per ogni colonna della matrice
@@ -156,7 +159,7 @@
                         let j = this.pivHeight+1;
                         while(j<this.m.length&&this.m[j].val(i).val() == 0) j++;
                         if(j!=this.m.length){
-                            gaussPrint(`\\(\\text{Scambio le righe ${i+1} e ${j+1}:}\\)`);
+                            gaussPrint(`\\(\\text{Swap lines ${i+1} and ${j+1}:}\\)`);
                             this.exchangeLines(i, j);
                             gaussPrint(this.print());
                             i--;
@@ -172,22 +175,24 @@
                             let mul = Math.mcm(pivot, underPivot)/underPivot;
                             this.m[j] = this.m[j].times(new Rational(mul));
                             console.log(this.print());
-                            gaussPrint(`\\(\\text{${underPivot} non è divisibile per ${pivot}, quindi lo rendo divisibile moltiplicandolo per ${mul}:}\\)`);
+                            gaussPrint(`\\(\\text{${underPivot} is not divisible by ${pivot}: multiply it by ${mul} in order to make it divisible:}\\)`);
                             gaussPrint(this.print());
                         } //se non è divisibile per il pivot lo rendo divisibile
                         underPivot = this.m[j].val(i).val();
                         this.m[j] = this.m[j].minus(this.m[this.pivHeight].times(new Rational(underPivot, pivot)));
-                        gaussPrint(`\\(\\text{Sottraggo alla riga ${j+1} la riga ${this.pivHeight+1} ${underPivot/pivot} volte:}\\)`);
+                        gaussPrint(`\\(\\text{Subtract line ${this.pivHeight+1} to line ${j+1}, ${underPivot/pivot} times:}\\)`);
                         console.log(this.print());
                         gaussPrint(this.print());
                     }
                 }
                 if(pivotlst.some(e=>!e))
-                    gaussPrint("\\(\\text{Variabili libere = " + pivotlst.map((e, i)=>!e?(i+1)+"°":"").filter(e=>e!="").join(' ')+"}\\)");
-                for(let j = this.pivHeight; j<this.m.length; j++)
-                    gaussPrint(`\\(\\text{Appartiene al sistema lineare solo se } ${this.m[j].printP2()} \\text{ = 0}\\)`);
+                    gaussPrint("\\(\\text{Free variables = " + pivotlst.map((e, i)=>!e?(i+1)+"°":"").filter(e=>e!="").join(' ')+"}\\)");
+                for(let j = this.pivHeight; j<this.m.length; j++){
+                    gaussPrint(`\\(\\ ${this.m[j].printP2()} \\text{ must be = 0 ${isNaN(this.m[j].printP2()) || this.m[j].printP2() == 0 ? "" : ", but it isn't!!"}}\\)`);
+                    if(!isNaN(this.m[j].printP2()) && this.m[j].printP2() != 0) solveable = false;
+                }
                 this.pivHeight--;
-                if(pivotlst.every(e => e)) this.jordan();
+                if(pivotlst.every(e => e) && solveable) this.jordan();
                 MathJax.typeset();
             }
             jordan(){
@@ -196,12 +201,12 @@
                 for(let i = this.pivHeight; i>=0; i--){
                     s = this.m[i].semplify();
                     if(s){
-                        jordanPrint(`\\(\\text{semplifico la riga ${i} dividendola per ${s.print()}}\\)`);
+                        jordanPrint(`\\(\\text{Simplify line ${i} by dividing it by ${s.print()}}\\)`);
                         jordanPrint(this.print());
                     }
 
                     for(let j = i-1; j>=0; j--){
-                        jordanPrint(`\\(\\text{sottraggo alla riga ${j} la riga ${i} ${this.m[j].val(i).val()/this.m[i].val(i).val()} volte}\\)`);
+                        jordanPrint(`\\(\\text{Subtract line ${i} to line ${j} ${this.m[j].val(i).val()/this.m[i].val(i).val()} times}\\)`);
                         this.m[j] = this.m[j].minus(this.m[i].times(this.m[j].val(i).div(this.m[i].val(i))));
                         jordanPrint(this.print());
                     }
